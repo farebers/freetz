@@ -1,0 +1,21 @@
+description: fix  unknown type name 'isc_boolean_t'
+author: Christian Klein <cj-k@gmx.de>
+
+Freetz: fixes the following build error
+
+In file included from ../includes/dhcpd.h:99:0,
+                 from bpf.c:35:
+../includes/tree.h:308:30: error: unknown type name 'isc_boolean_t'
+
+--- includes/dhcpd.h
++++ includes/dhcpd.h
+@@ -93,6 +93,9 @@
+ #include <omapip/isclib.h>
+ #include <omapip/result.h>
+ 
++#include <isc/boolean.h>
++#include <isc/int.h>
++
+ #include "dhcp.h"
+ #include "dhcp6.h"
+ #include "statement.h"

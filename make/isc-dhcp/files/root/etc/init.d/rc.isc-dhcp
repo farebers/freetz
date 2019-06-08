@@ -10,7 +10,7 @@ USER_GROUP=nobody
 
 [ -r /etc/options.cfg ] && . /etc/options.cfg
 
-if [ "$ISC_DHCP_MULTID" != "yes" -o "$FREETZ_AVMDAEMON_DISABLE_DNS" == "y" ]; then
+if [ "$ISC_DHCP_BEFORE_MULTID" != "yes" -o "$FREETZ_PACKAGE_ISC_DHCP_DISABLE_DHCP" == "y" ]; then
 	nomultid=y
 else
 	[ "$(/etc/init.d/rc.multid status)" != "running" ] && nomultid=y
@@ -23,9 +23,11 @@ startdaemon_pre() {
 start() {
 	touch $LEASES_FILE
 	chown $USER_GROUP:$USER_GROUP $LEASES_FILE
+	mkdir -p /var/run/isc-dhcp
 
 	local OPTIONS="$ISC_DHCP_CMDLINE -cf $DAEMON_CONFIG -q -user $USER_GROUP -group $USER_GROUP -pf $PID_FILE -lf $LEASES_FILE"
 	modlib_startdaemon $DAEMON_BIN $OPTIONS
+	return 0
 }
 
 startdaemon_post() {
