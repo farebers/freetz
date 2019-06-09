@@ -26,7 +26,7 @@ start() {
 	mkdir -p ${PID_FILE%/*}
 	chown $USER_GROUP:$USER_GROUP ${PID_FILE%/*}
 
-	local OPTIONS="$ISC_DHCP_CMDLINE -cf $DAEMON_CONFIG -user $USER_GROUP -group $USER_GROUP -pf $PID_FILE -lf $LEASES_FILE"
+	local OPTIONS="-q -cf $DAEMON_CONFIG -user $USER_GROUP -group $USER_GROUP -pf $PID_FILE -lf $LEASES_FILE $ISC_DHCP_CMDLINE"
 	modlib_startdaemon $DAEMON_BIN $OPTIONS
 	return 0
 }
@@ -46,9 +46,9 @@ stop_post() {
 case $1 in
 	""|load|multid)
 		if [ "$1" == "multid" ]; then
-			[ "$ISC_DHCP_WRAPPER" != "yes" ] && exit
+			exit
 		else
-			[ "$ISC_DHCP_WRAPPER" == "yes" ] && exit
+			:
 		fi
 
 		mkdir -p ${DAEMON_CONFIG%/*}
@@ -62,22 +62,6 @@ case $1 in
 		modreg daemon $DAEMON
 		modreg file $DAEMON dhcpd-conf '$(lang de:"Konfiguration" en:"Configuration")' 0 isc-dhcpd_conf
 
-		# the wrapper approach does not work - network interfaces are 
-		# not available before multid is up
-		if [ false ]; then
-		# wait for network interfaces to appear
-		local have_net=false
-		for sec in 1 2 3 4 5; do
-			sleep 30
-			if (/sbin/ip a 2>/dev/null | grep -q 'lan:') && (/sbin/ip a 2>/dev/null | grep -q 'guest:'); then
-				have_net=true
-				echo $sec
-				break
-			fi
-		done
-		echo $have_net
-		fi
-		FORCE_STATUS=3
 		modlib_start $ISC_DHCP_ENABLED
 		;;
 	unload)
