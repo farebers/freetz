@@ -7,3 +7,12 @@ config FREETZ_PACKAGE_ISC_DHCP
 		solution for implementing DHCP servers, relay agents, and clients for small local networks
 		to large enterprises. ISC DHCP solution supports both IPv4 and IPv6, and is suitable
 		for use in high-volume and high-reliability applications.
+
+config FREETZ_PACKAGE_ISC_DHCP_DISABLE_DHCP
+	bool "Disable multid's DHCP"
+	depends on FREETZ_PACKAGE_ISC_DHCP
+	select FREETZ_AVMDAEMON_DISABLE_MULTIDPORTS
+	select FREETZ_AVMDAEMON_DISABLE_DHCP
+	default y
+	help
+		This selects the remapping of multid's DHCP port.
